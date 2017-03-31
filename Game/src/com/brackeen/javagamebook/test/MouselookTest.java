@@ -53,7 +53,7 @@ public class MouselookTest extends GameCore implements MouseMotionListener, KeyL
 		Window window = screen.getFullScreenWindow();
 		window.addMouseMotionListener(this);
 		window.addKeyListener(this);
-		bgImage = loadImage("image/background.jpg");
+		bgImage = loadImage("image/bg.jpg");
 	}
 	
 	//用Robot类将鼠标放到屏幕中央。注意并不是所有平台都支持使用这个类
