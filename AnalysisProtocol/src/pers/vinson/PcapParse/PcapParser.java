@@ -55,9 +55,9 @@ public class PcapParser extends Observable{
 					m = file.read(packet_header);
 					PcapPacketHeader packetHeader = parsePacketHeader(packet_header);
 					packetHeaders.add(packetHeader);
-
 					content = new byte[packetHeader.getCaplen()];	//content为协议及数据
 					System.out.println("content的长度："+content.length);
+					content = new byte[packetHeader.getCaplen()];
 					m = file.read(content);
 					
 					protocolData = new ProtocolData();
