@@ -1,0 +1,33 @@
+Report for caida/oc48-mfn.dirA.20020814-160000.UTC.anon.pcap/20020814-090000-0-anon.pcap
+
+Total number of packets in pcap                :         1 
+Number of packets sent from 68:94:23:36:5A:97  :         0   0.00 % 
+Number of packets sent to   68:94:23:36:5A:97  :         0   0.00 % 
+ARP packets                                    :         0 
+TCP packets                                    :         0 
+SSL/TLS packets                                :         0 
+UDP packets                                    :         0 
+DNS packets                                    :         0 
+HTTP packets                                   :         0 
+Number of  GET requests                        :         0 
+Number of POST requests                        :         0 
+
+TCP Flags distribution: 
+SYN          :         0   NaN % 
+SYN ACK      :         0   NaN % 
+ACK          :         0   NaN % 
+PSH ACK      :         0   NaN % 
+FIN PSH ACK  :         0   NaN % 
+FIN ACK      :         0   NaN % 
+RST          :         0   NaN % 
+
+Found  0  images (images transferred over SSL/TLS not included): 
+
+Servers'  ports utilised:
+
+
+Client's  ports utilised:
+
+
+IP addresses visited:
+
