@@ -21,6 +21,7 @@ public class PcapParser extends Observable{
 	private IPPacketHeader ipHeader;
 	private TCPPacketHeader tcpHeader;
 	private UDPPacketHeader udpHeader;
+	private boolean isBigEnd;	//是否大端形式存储
 
 	private byte[] file_header = new byte[24];	//文件头
 	private byte[] packet_header = new byte[16];	//pcap数据包头部
@@ -44,11 +45,14 @@ public class PcapParser extends Observable{
 
 			if(m > 0){
 				//解析pcap文件头
-				PcapFileHeader fileHeader = parseFileHeader(file_header);
+				int offset = 0;
+				PcapFileHeader fileHeader = ParseFileHeader.parseFileHeader(file_header, offset);
 				if (null == fileHeader) 
 					System.out.println("fileHeader is null");
 				struct.setFileHeader(fileHeader);
-				fileHeader.toString();
+				
+				//是否是大端形式存储
+				isBigEnd = ParseFileHeader.isBigEnd(fileHeader);
 
 				while(m > 0){
 					//读取pcap数据包头
@@ -174,7 +178,7 @@ public class PcapParser extends Observable{
 			System.out.println("ciscohdlc");
 			ProtocolType type = ParseCiscoHDLC.protocolType(content);
 			if(type == ProtocolType.IP){
-				System.out.println("ip");
+				IPPacketHeader ip = ParseIP.parse(content, 4, isBigEnd);
 			}
 		}
 		return false;
