@@ -21,13 +21,13 @@ public class PcapParser extends Observable{
 	private IPPacketHeader ipHeader;
 	private TCPPacketHeader tcpHeader;
 	private UDPPacketHeader udpHeader;
-	private boolean isBigEnd;	//是否大端形式存储
+	private boolean isBigEnd;	//閺勵垰鎯佹径褏顏ぐ銏犵础鐎涙ê鍋�
 
-	private byte[] file_header = new byte[24];	//文件头
-	private byte[] packet_header = new byte[16];	//pcap数据包头部
+	private byte[] file_header = new byte[24];	//閺傚洣娆㈡径锟�
+	private byte[] packet_header = new byte[16];	//pcap閺佺増宓侀崠鍛仈闁拷
 	private byte[] content;
 
-	//构造方法
+	//閺嬪嫰锟界姵鏌熷▔锟�
 	public PcapParser(File pcap, File outDir){
 		this.pcap = pcap;
 		this.savePath = outDir.getAbsolutePath();
@@ -39,33 +39,33 @@ public class PcapParser extends Observable{
 		List<PcapPacketHeader> packetHeaders = new ArrayList<PcapPacketHeader>();
 		FileInputStream file = null;
 		try{
-			//读取文件
+			//鐠囪褰囬弬鍥︽
 			file = new FileInputStream(pcap);
-			int m = file.read(file_header);		//读取file_header长度的数据，并存放到file_header
+			int m = file.read(file_header);		//鐠囪褰噁ile_header闂�鍨閻ㄥ嫭鏆熼幑顕嗙礉楠炶泛鐡ㄩ弨鎯у煂file_header
 
 			if(m > 0){
-				//解析pcap文件头
+				//鐟欙絾鐎絧cap閺傚洣娆㈡径锟�
 				int offset = 0;
 				PcapFileHeader fileHeader = ParseFileHeader.parseFileHeader(file_header, offset);
 				if (null == fileHeader) 
 					System.out.println("fileHeader is null");
 				struct.setFileHeader(fileHeader);
 				
-				//是否是大端形式存储
+				//閺勵垰鎯侀弰顖氥亣缁旑垰鑸板蹇撶摠閸岋拷
 				isBigEnd = ParseFileHeader.isBigEnd(fileHeader);
 
 				while(m > 0){
-					//读取pcap数据包头
+					//鐠囪褰噋cap閺佺増宓侀崠鍛仈
 					m = file.read(packet_header);
 					PcapPacketHeader packetHeader = parsePacketHeader(packet_header);
 					packetHeaders.add(packetHeader);
-					content = new byte[packetHeader.getCaplen()];	//content为协议及数据
-					System.out.println("content的长度："+content.length);
+					content = new byte[packetHeader.getCaplen()];	//content娑撳搫宕楃拋顔煎挤閺佺増宓�
+					System.out.println("content閻ㄥ嫰鏆辨惔锔肩窗"+content.length);
 					content = new byte[packetHeader.getCaplen()];
 					m = file.read(content);
 					
 					protocolData = new ProtocolData();
-					//读取协议类型
+					//鐠囪褰囬崡蹇氼唴缁鐎�
 					boolean isDone = parseContent();
 					//Debug
 					m = -1;
@@ -81,19 +81,19 @@ public class PcapParser extends Observable{
 		return rs;
 	}
 
-	//解析pcap文件头
+	//鐟欙絾鐎絧cap閺傚洣娆㈡径锟�
 	public PcapFileHeader parseFileHeader(byte[] file_header) throws IOException{
 		PcapFileHeader fileHeader = new PcapFileHeader();
-		byte[] buff_4 = new byte[4];		//4字节的数组
-		byte[] buff_2 = new byte[2];		//2字节的数组
+		byte[] buff_4 = new byte[4];		//4鐎涙濡惃鍕殶缂侊拷
+		byte[] buff_2 = new byte[2];		//2鐎涙濡惃鍕殶缂侊拷
 
-		int offset = 0;						//位移
+		int offset = 0;						//娴ｅ秶些
 		for(int nIndex = 0; nIndex < 4; ++nIndex){
-			//读取前4个字节，即文件标识
+			//鐠囪褰囬崜锟�4娑擃亜鐡ч懞鍌︾礉閸楄櫕鏋冩禒鑸电垼鐠囷拷
 			buff_4[nIndex] = file_header[nIndex + offset];
 		}
 		
-		int magic = DataUtils.byteArrayToInt(buff_4);	//pcap文件标识
+		int magic = DataUtils.byteArrayToInt(buff_4);	//pcap閺傚洣娆㈤弽鍥槕
 		fileHeader.setMagic(magic);
 
 		offset += 4;
@@ -136,7 +136,7 @@ public class PcapParser extends Observable{
 		return fileHeader;
 	}
 
-	//解析数据包头
+	//鐟欙絾鐎介弫鐗堝祦閸栧懎銇�
 	public PcapPacketHeader parsePacketHeader(byte[] packet_header){
 		byte[] buff_4 = new byte[4];
 		PcapPacketHeader packetHeader = new PcapPacketHeader();
@@ -156,7 +156,7 @@ public class PcapParser extends Observable{
 		offset += 4;
 		for(int nIndex = 0; nIndex < 4; ++nIndex)
 			buff_4[nIndex] = packet_header[nIndex + offset];
-		//先逆序再转为int
+		//閸忓牓锟藉棗绨崘宥堟祮娑撶nt
 		DataUtils.reverseByteArray(buff_4);
 		int caplen = DataUtils.byteArrayToInt(buff_4);
 		packetHeader.setCaplen(caplen);
@@ -171,14 +171,16 @@ public class PcapParser extends Observable{
 		return packetHeader;
 	}
 
-	//解析数据
+	//鐟欙絾鐎介弫鐗堝祦
 	private boolean parseContent(){
 		System.out.println(struct.getFileHeader().getLinktype());
 		if(LinkType.CISCOHDLC == struct.getFileHeader().getLinktype()){
-			System.out.println("ciscohdlc");
 			ProtocolType type = ParseCiscoHDLC.protocolType(content);
 			if(type == ProtocolType.IP){
 				IPPacketHeader ip = ParseIP.parse(content, 4, isBigEnd);
+				System.out.println("====");
+				if(ProtocolNum.TCP == DataUtil.byteToInt(ip.getProtocol()))
+					ParseTCP.parse(content, 24, isBigEnd);
 			}
 		}
 		return false;
