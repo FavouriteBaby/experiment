@@ -6,9 +6,8 @@ import pers.vinson.datastruct.ProtocolType;
 public class ParseCiscoHDLC {
 	public ParseCiscoHDLC(){}
 	
-	public static int offset = 0;
-	
 	public static ProtocolType protocolType(byte[] content){
+		int offset = 0;
 		byte[] buff_2 = new byte[2];
 		offset += 2;
 		for(int nIndex = 0; nIndex < 2; ++nIndex)
@@ -16,7 +15,7 @@ public class ParseCiscoHDLC {
 		
 		DataUtil.reverseByteArray(buff_2);
 		short nType = DataUtil.byteArrayToShort(buff_2);
-		System.out.println(nType);
+		System.out.println("nType: " + nType);
 		if(nType == 8){
 			return ProtocolType.IP;
 		}

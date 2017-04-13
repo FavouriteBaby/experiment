@@ -58,4 +58,11 @@ public class ParseTCP {
 		tcp.setUrgentPointer(urgentPointer);
 		return tcp;
 	}
+	
+	public static int getDecimalPort(short port){
+		int nPort = (int)port;
+		if(nPort < 0)
+			return 65536+nPort;
+		return nPort;
+	}
 }
