@@ -12,59 +12,59 @@ public class ParseIP {
 		byte[] buff_4 = new byte[4];
 		byte[] buff_2 = new byte[2];
 		
-		//鐗堟湰鍙峰拰棣栭儴闀垮害
+		//閻楀牊婀伴崣宄版嫲妫ｆ牠鍎撮梹鍨
 		byte varHLen = content[offset++];
 		if(0 == varHLen)
 			return null;
 		ip.setVarHLen(varHLen);
 		
-		//鏈嶅姟绫诲瀷
+		//閺堝秴濮熺猾璇茬��
 		byte tos = content[offset++];
 		ip.setTos(tos);
 		
-		//鎬婚暱搴�
+		//閹鏆辨惔锟�
 		for(int nIndex = 0; nIndex < 2; ++nIndex)
 			buff_2[nIndex] = content[nIndex + offset];
 		short totalLen = DataUtil.byteArrayToShort(buff_2);
 		ip.setTotalLen(totalLen);
 		
-		//鏍囪瘑
+		//閺嶅洩鐦�
 		offset += 2;
 		for(int nIndex = 0; nIndex < 2; ++nIndex)
 			buff_2[nIndex] = content[nIndex + offset];
 		short id = DataUtil.byteArrayToShort(buff_2);
 		ip.setId(id);
 
-		//鏍囧織鍜�13浣嶇墖鍋忕Щ
+		//閺嶅洤绻旈崪锟�13娴ｅ秶澧栭崑蹇曅�
 		offset += 2;
 		for(int nIndex = 0; nIndex < 2; ++nIndex)
 			buff_2[nIndex] = content[nIndex + offset];
 		short flagSegment = DataUtil.byteArrayToShort(buff_2);
 		ip.setFlagSegment(flagSegment);
 
-		//鐢熷瓨鏃堕棿
+		//閻㈢喎鐡ㄩ弮鍫曟？
 		offset += 2;
 		byte ttl = content[offset++];
 		ip.setTTL(ttl);
 
-		//鍗忚
+		//閸楀繗顔�
 		byte protocol = content[offset++];
 		ip.setProtocol(protocol);
 	
-		//16浣嶉閮ㄦ楠屽拰
+		//16娴ｅ秹顩婚柈銊︻梾妤犲苯鎷�
 		for(int nIndex = 0; nIndex < 2; ++nIndex)
 			buff_2[nIndex] = content[nIndex + offset];
 		short checkSum = DataUtil.byteArrayToShort(buff_2);
 		ip.setCheckSum(checkSum);
 
-		//32浣嶆簮IP鍦板潃
+		//32娴ｅ秵绨甀P閸︽澘娼�
 		offset += 2;
 		for(int nIndex = 0; nIndex < 4; ++nIndex)
 			buff_4[nIndex] = content[nIndex + offset];
 		int srcIP = DataUtil.byteArrayToInt(buff_4);
 		ip.setSrcIP(srcIP);
 
-		//32浣嶇洰鐨処P鍦板潃
+		//32娴ｅ秶娲伴惃鍑閸︽澘娼�
 		offset += 4;
 		for(int nIndex = 0; nIndex < 4; ++nIndex)
 			buff_4[nIndex] = content[nIndex + offset];
@@ -74,7 +74,7 @@ public class ParseIP {
 		return ip;
 	}
 
-	//杩斿洖IP鍦板潃鐨勫瓧绗︿覆
+	//鏉╂柨娲朓P閸︽澘娼冮惃鍕摟缁楋缚瑕�
 	public static String getIPString(int ip){
 		byte[] byteIP = new byte[4];
 		byteIP = DataUtil.intToByteArray(ip);

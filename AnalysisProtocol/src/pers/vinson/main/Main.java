@@ -5,9 +5,10 @@ import pers.vinson.PcapParse.*;
 
 public class Main {
 	public static void main(String[] args){
-		File pcapFile = new File("data/20020814-090000-0-anon.pcap");
-		File outDir = new File("data/output");
+		File pcapFile = new File("data/test.pcap");
+		File outDir = new File("data/output.txt");
 		PcapParser pcap = new PcapParser(pcapFile, outDir);
+		
 		pcap.parse();
 	}
 }

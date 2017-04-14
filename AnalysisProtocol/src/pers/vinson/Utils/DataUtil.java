@@ -3,12 +3,12 @@ package pers.vinson.Utils;
 public class DataUtil {
 	public DataUtil(){}
 	
-	//byte杞�16杩涘埗瀛楃涓�
+	//byte鏉烇拷16鏉╂稑鍩楃�涙顑佹稉锟�
 	public static String byteToHexString(byte b){
 		return intToHexString(byteToInt(b));
 	}
 
-	//灏哹yte鏁扮粍杞垚16杩涘埗瀛楃涓�
+	//鐏忓摴yte閺佹壆绮嶆潪顒佸灇16鏉╂稑鍩楃�涙顑佹稉锟�
 	public static StringBuilder byteArrayToHexString(byte[] b){
 		StringBuilder sbHexString = new StringBuilder();
 		for(int nIndex = 0; nIndex < b.length; ++nIndex){
@@ -18,17 +18,17 @@ public class DataUtil {
 		return sbHexString;
 	}
 
-	//灏唅nt杞垚16杩涘埗瀛楃涓�
+	//鐏忓攨nt鏉烆剚鍨�16鏉╂稑鍩楃�涙顑佹稉锟�
 	public static String intToHexString(int data){
 		return Integer.toHexString(data);
 	}
 	
-	//byte杞琲nt
+	//byte鏉炵惒nt
 	public static int byteToInt(byte b){
 		return (b & 0xff);
 	}
 	
-	//byte[]杞垚int
+	//byte[]鏉烆剚鍨歩nt
 	public static int byteArrayToInt(byte[] b){
 		return byteArrayToInt(b, 0);
 	}
@@ -42,7 +42,7 @@ public class DataUtil {
 		return value;
 	}
 	
-	//byte杞瑂hort
+	//byte鏉炵憘hort
 	public static short byteArrayToShort(byte[] b){
 		return byteArrayToShort(b, 0);
 	}
@@ -51,7 +51,7 @@ public class DataUtil {
 		return (short) (((b[offset] & 0xff) << 8) | (b[offset + 1] & 0xff)); 
 	}
 	
-	//鏁扮粍閫嗚浆
+	//閺佹壆绮嶉柅鍡氭祮
 	public static void reverseByteArray(byte[] arr){
 		byte temp;
 		int n = arr.length;
@@ -62,10 +62,10 @@ public class DataUtil {
 		}
 	}
 
-	//int 杞� byte鏁扮粍
+	//int 鏉烇拷 byte閺佹壆绮�
 	public static byte[] intToByteArray(int i) {
 		byte[] result = new byte[4];   
-		//鐢遍珮浣嶅埌浣庝綅
+		//閻㈤亶鐝担宥呭煂娴ｅ簼缍�
 		result[0] = (byte)((i >> 24) & 0xFF);
 		result[1] = (byte)((i >> 16) & 0xFF);
 		result[2] = (byte)((i >> 8) & 0xFF); 
@@ -86,5 +86,17 @@ public class DataUtil {
 				hex = "0" + hex;
 		}
 		return "0x" + hex;
+	}
+	
+	//get hight 4bit of 1byte
+	public static int getHighByte(byte data){
+		int high = ((data & 0xf0) >> 4);
+		return high;
+	}
+	
+	//get low 4bit of 1byte
+	public static int getLowByte(byte data){
+		int low = ((data & 0x0f));
+		return low;
 	}
 }

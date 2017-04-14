@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+import pers.vinson.Save.SaveFile;
 import pers.vinson.Utils.DataUtil;
 import pers.vinson.Utils.DataUtils;
 import pers.vinson.Utils.FileUtils;
@@ -24,11 +25,12 @@ public class PcapParser extends Observable{
 	private boolean isBigEnd;	//is big endian
 	private int nOffset = 0;		//record where begin parse
 
-	private byte[] file_header = new byte[24];	//閺傚洣娆㈡径锟�
-	private byte[] packet_header = new byte[16];	//pcap閺佺増宓侀崠鍛仈闁拷
+	private byte[] file_header = new byte[24];	//闁哄倸娲ｅ▎銏″緞閿燂拷
+	private byte[] packet_header = new byte[16];	//pcap闁轰胶澧楀畵渚�宕犻崨顓滀粓闂侇噯鎷�
 	private byte[] content;
+	private List<ProtocolData> protocolContext = new ArrayList<ProtocolData>();
 
-	//閺嬪嫰锟界姵鏌熷▔锟�
+	//闁哄瀚伴敓鐣屽У閺岀喎鈻旈敓锟�
 	public PcapParser(File pcap, File outDir){
 		this.pcap = pcap;
 		this.savePath = outDir.getAbsolutePath();
@@ -40,9 +42,9 @@ public class PcapParser extends Observable{
 		List<PcapPacketHeader> packetHeaders = new ArrayList<PcapPacketHeader>();
 		FileInputStream file = null;
 		try{
-			//鐠囪褰囬弬鍥︽
+			//閻犲洩顕цぐ鍥棘閸ワ附顐�
 			file = new FileInputStream(pcap);
-			int m = file.read(file_header);		//鐠囪褰噁ile_header闂�鍨閻ㄥ嫭鏆熼幑顕嗙礉楠炶泛鐡ㄩ弨鎯у煂file_header
+			int m = file.read(file_header);		//閻犲洩顕цぐ鍣乮le_header闂傦拷閸喖顔婇柣銊ュ閺嗙喖骞戦鍡欑妤犵偠娉涢悺銊╁绩閹冪厒file_header
 
 			if(m > 0){
 				//parse .pcap file header
@@ -96,19 +98,19 @@ public class PcapParser extends Observable{
 		return rs;
 	}
 
-	//鐟欙絾鐎絧cap閺傚洣娆㈡径锟�
+	//閻熸瑱绲鹃悗绲ap闁哄倸娲ｅ▎銏″緞閿燂拷
 	public PcapFileHeader parseFileHeader(byte[] file_header) throws IOException{
 		PcapFileHeader fileHeader = new PcapFileHeader();
-		byte[] buff_4 = new byte[4];		//4鐎涙濡惃鍕殶缂侊拷
-		byte[] buff_2 = new byte[2];		//2鐎涙濡惃鍕殶缂侊拷
+		byte[] buff_4 = new byte[4];		//4閻庢稒顨夋俊顓㈡儍閸曨剚娈剁紓渚婃嫹
+		byte[] buff_2 = new byte[2];		//2閻庢稒顨夋俊顓㈡儍閸曨剚娈剁紓渚婃嫹
 
-		int offset = 0;						//娴ｅ秶些
+		int offset = 0;						//濞达絽绉朵簺
 		for(int nIndex = 0; nIndex < 4; ++nIndex){
-			//鐠囪褰囬崜锟�4娑擃亜鐡ч懞鍌︾礉閸楄櫕鏋冩禒鑸电垼鐠囷拷
+			//閻犲洩顕цぐ鍥礈閿燂拷4濞戞搩浜滈悺褔鎳為崒锔剧闁告娅曢弸鍐╃閼哥數鍨奸悹鍥锋嫹
 			buff_4[nIndex] = file_header[nIndex + offset];
 		}
 		
-		int magic = DataUtils.byteArrayToInt(buff_4);	//pcap閺傚洣娆㈤弽鍥槕
+		int magic = DataUtils.byteArrayToInt(buff_4);	//pcap闁哄倸娲ｅ▎銏ゅ冀閸ヮ亞妲�
 		fileHeader.setMagic(magic);
 
 		offset += 4;
@@ -151,7 +153,7 @@ public class PcapParser extends Observable{
 		return fileHeader;
 	}
 
-	//鐟欙絾鐎介弫鐗堝祦閸栧懎銇�
+	//閻熸瑱绲鹃悗浠嬪极閻楀牆绁﹂柛鏍ф噹閵囷拷
 	public PcapPacketHeader parsePacketHeader(byte[] packet_header){
 		byte[] buff_4 = new byte[4];
 		PcapPacketHeader packetHeader = new PcapPacketHeader();
@@ -188,19 +190,47 @@ public class PcapParser extends Observable{
 	//parse protocol
 	private boolean parseContent(){
 		if(LinkType.CISCOHDLC == struct.getFileHeader().getLinktype()){
-			ProtocolType type = ParseCiscoHDLC.protocolType(content);
-			if(type == ProtocolType.IP){
-				IPPacketHeader ip = ParseIP.parse(content, 4, isBigEnd);
+			int nType = ParseCiscoHDLC.protocolType(content);
+			if(nType == ProtocolNum.IP){
+				IPPacketHeader ip = ParseIP.parse(content, GetOffset.getIPOffset(nType), isBigEnd);
 				System.out.println(ParseIP.getIPString(ip.getSrcIP()) + " " + ParseIP.getIPString(ip.getDesIP()));
 				if(ProtocolNum.TCP == DataUtil.byteToInt(ip.getProtocol())){
-					TCPPacketHeader tcp = ParseTCP.parse(content, 24, isBigEnd);
+					TCPPacketHeader tcp = ParseTCP.parse(content, GetOffset.getTransportLayerOffset(LinkType.RAWIP, ip.getVarHLen()), isBigEnd);
 					System.out.println(ParseTCP.getDecimalPort(tcp.getSrcPort()) + " " + ParseTCP.getDecimalPort(tcp.getDesPort()));
 				}
 				if(ProtocolNum.UDP == DataUtil.byteToInt(ip.getProtocol())){
-					UDPPacketHeader udp = ParseUDP.parse(content, 24, isBigEnd);
+					UDPPacketHeader udp = ParseUDP.parse(content, GetOffset.getTransportLayerOffset(LinkType.RAWIP, ip.getVarHLen()), isBigEnd);
 					System.out.println(ParseUDP.getDecimalPort(udp.getSrcPort()) + " " + ParseUDP.getDecimalPort(udp.getDesPort()));
 				}
 			}
+		}
+		
+		if(LinkType.RAWIP == struct.getFileHeader().getLinktype()){
+			System.out.println("RAW IP");
+			IPPacketHeader ip = ParseIP.parse(content, GetOffset.getIPOffset(LinkType.RAWIP), isBigEnd);
+			
+			int nIndex = protocolContext.size();
+			ProtocolData proContext = new ProtocolData();
+			protocolContext.add(proContext);
+			protocolContext.get(nIndex).setSrcIP(ParseIP.getIPString(ip.getSrcIP()));
+			protocolContext.get(nIndex).setDesIP(ParseIP.getIPString(ip.getDesIP()));
+			
+			if(ProtocolNum.TCP == DataUtil.byteToInt(ip.getProtocol())){
+				TCPPacketHeader tcp = ParseTCP.parse(content, GetOffset.getTransportLayerOffset(LinkType.RAWIP, ip.getVarHLen()), isBigEnd);
+				protocolContext.get(nIndex).setSrcPort(Integer.toString(ParseTCP.getDecimalPort(tcp.getSrcPort())));
+				protocolContext.get(nIndex).setDesPort(Integer.toString(ParseTCP.getDecimalPort(tcp.getDesPort())));
+			}
+			if(ProtocolNum.UDP == DataUtil.byteToInt(ip.getProtocol())){
+				UDPPacketHeader udp = ParseUDP.parse(content, GetOffset.getTransportLayerOffset(LinkType.RAWIP, ip.getVarHLen()), isBigEnd);
+				protocolContext.get(nIndex).setSrcPort(Integer.toString(ParseUDP.getDecimalPort(udp.getSrcPort())));
+				protocolContext.get(nIndex).setDesPort(Integer.toString(ParseUDP.getDecimalPort(udp.getDesPort())));
+			}
+		}
+		
+		try{
+			SaveFile.save(savePath, protocolContext);
+		}catch(IOException e){
+			e.printStackTrace();
 		}
 		return false;
 	}
