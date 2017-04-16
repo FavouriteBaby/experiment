@@ -192,15 +192,14 @@ public class PcapParser extends Observable{
 		if(LinkType.CISCOHDLC == struct.getFileHeader().getLinktype()){
 			int nType = ParseCiscoHDLC.protocolType(content);
 			if(nType == ProtocolNum.IP){
-				IPPacketHeader ip = ParseIP.parse(content, GetOffset.getIPOffset(nType), isBigEnd);
-				System.out.println(ParseIP.getIPString(ip.getSrcIP()) + " " + ParseIP.getIPString(ip.getDesIP()));
+				IPPacketHeader ip = ParseIP.parse(content, GetOffset.getIPOffset(LinkType.CISCOHDLC), isBigEnd);
 				if(ProtocolNum.TCP == DataUtil.byteToInt(ip.getProtocol())){
 					TCPPacketHeader tcp = ParseTCP.parse(content, GetOffset.getTransportLayerOffset(LinkType.RAWIP, ip.getVarHLen()), isBigEnd);
-					System.out.println(ParseTCP.getDecimalPort(tcp.getSrcPort()) + " " + ParseTCP.getDecimalPort(tcp.getDesPort()));
+					saveFormat(ip.getSrcIP(), ip.getDesIP(), tcp.getSrcPort(), tcp.getDesPort(), true);
 				}
 				if(ProtocolNum.UDP == DataUtil.byteToInt(ip.getProtocol())){
 					UDPPacketHeader udp = ParseUDP.parse(content, GetOffset.getTransportLayerOffset(LinkType.RAWIP, ip.getVarHLen()), isBigEnd);
-					System.out.println(ParseUDP.getDecimalPort(udp.getSrcPort()) + " " + ParseUDP.getDecimalPort(udp.getDesPort()));
+					saveFormat(ip.getSrcIP(), ip.getDesIP(), udp.getSrcPort(), udp.getDesPort(), false);
 				}
 			}
 		}
@@ -209,21 +208,13 @@ public class PcapParser extends Observable{
 			System.out.println("RAW IP");
 			IPPacketHeader ip = ParseIP.parse(content, GetOffset.getIPOffset(LinkType.RAWIP), isBigEnd);
 			
-			int nIndex = protocolContext.size();
-			ProtocolData proContext = new ProtocolData();
-			protocolContext.add(proContext);
-			protocolContext.get(nIndex).setSrcIP(ParseIP.getIPString(ip.getSrcIP()));
-			protocolContext.get(nIndex).setDesIP(ParseIP.getIPString(ip.getDesIP()));
-			
 			if(ProtocolNum.TCP == DataUtil.byteToInt(ip.getProtocol())){
 				TCPPacketHeader tcp = ParseTCP.parse(content, GetOffset.getTransportLayerOffset(LinkType.RAWIP, ip.getVarHLen()), isBigEnd);
-				protocolContext.get(nIndex).setSrcPort(Integer.toString(ParseTCP.getDecimalPort(tcp.getSrcPort())));
-				protocolContext.get(nIndex).setDesPort(Integer.toString(ParseTCP.getDecimalPort(tcp.getDesPort())));
+				saveFormat(ip.getSrcIP(), ip.getDesIP(), tcp.getSrcPort(), tcp.getDesPort(), true);
 			}
 			if(ProtocolNum.UDP == DataUtil.byteToInt(ip.getProtocol())){
 				UDPPacketHeader udp = ParseUDP.parse(content, GetOffset.getTransportLayerOffset(LinkType.RAWIP, ip.getVarHLen()), isBigEnd);
-				protocolContext.get(nIndex).setSrcPort(Integer.toString(ParseUDP.getDecimalPort(udp.getSrcPort())));
-				protocolContext.get(nIndex).setDesPort(Integer.toString(ParseUDP.getDecimalPort(udp.getDesPort())));
+				saveFormat(ip.getSrcIP(), ip.getDesIP(), udp.getSrcPort(), udp.getDesPort(), false);
 			}
 		}
 		
@@ -242,5 +233,19 @@ public class PcapParser extends Observable{
 			default:
 				return LinkType.OTHER;
 		}
+	}
+	
+	private void saveFormat(int srcIP, int desIP, short srcPort, short desPort, boolean isTCP){
+		ProtocolData proContext = new ProtocolData();
+		proContext.setSrcIP(ParseIP.getIPString(srcIP));
+		proContext.setDesIP(ParseIP.getIPString(desIP));
+		if(isTCP){
+			proContext.setSrcPort(Integer.toString(ParseTCP.getDecimalPort(srcPort)));
+			proContext.setDesPort(Integer.toString(ParseTCP.getDecimalPort(desPort)));
+		}else{
+			proContext.setSrcPort(Integer.toString(ParseUDP.getDecimalPort(srcPort)));
+			proContext.setDesPort(Integer.toString(ParseUDP.getDecimalPort(desPort)));
+		}
+		protocolContext.add(proContext);
 	}
 }
