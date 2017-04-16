@@ -71,7 +71,7 @@ public class SaveFile {
 		try{
 			writer = new BufferedWriter(new FileWriter(filePath));
 			for(ProtocolData data : content){
-				writer.write(data.getDesIP() + "," + data.getDesIP() + "," + data.getSrcPort() + "," + data.getDesPort());
+				writer.write(data.getSrcIP() + "," + data.getDesIP() + "," + data.getSrcPort() + "," + data.getDesPort());
 				writer.newLine();
 			}
 				
