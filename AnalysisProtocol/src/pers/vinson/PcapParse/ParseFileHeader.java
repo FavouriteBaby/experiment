@@ -6,18 +6,18 @@ import pers.vinson.Utils.DataUtils;
 import pers.vinson.datastruct.PcapFileHeader;
 
 public class ParseFileHeader {
-	//解析pcap文件头
+	//瑙ｆ瀽pcap鏂囦欢澶�
 	public static PcapFileHeader parseFileHeader(byte[] file_header, int offset) throws IOException{
 		PcapFileHeader fileHeader = new PcapFileHeader();
-		byte[] buff_4 = new byte[4];		//4字节的数组
-		byte[] buff_2 = new byte[2];		//2字节的数组
+		byte[] buff_4 = new byte[4];		//4瀛楄妭鐨勬暟缁�
+		byte[] buff_2 = new byte[2];		//2瀛楄妭鐨勬暟缁�
 
 		for(int nIndex = 0; nIndex < 4; ++nIndex){
-			//读取前4个字节，即文件标识
+			//璇诲彇鍓�4涓瓧鑺傦紝鍗虫枃浠舵爣璇�
 			buff_4[nIndex] = file_header[nIndex + offset];
 		}
 		
-		int magic = DataUtils.byteArrayToInt(buff_4);	//pcap文件标识
+		int magic = DataUtils.byteArrayToInt(buff_4);	//pcap鏂囦欢鏍囪瘑
 		fileHeader.setMagic(magic);
 
 		offset += 4;
@@ -60,12 +60,12 @@ public class ParseFileHeader {
 		return fileHeader;
 	}
 	
-	//是否为大端形式存储
+	//鏄惁涓哄ぇ绔舰寮忓瓨鍌�
 	public static boolean isBigEnd(PcapFileHeader fileHeader){
 		int magic = fileHeader.getMagic();
 		if(Integer.toHexString(magic).equals("d4c3b2a1"))
-			return false;
-		return true;
+			return true;
+		return false;
 	}
 	
 }

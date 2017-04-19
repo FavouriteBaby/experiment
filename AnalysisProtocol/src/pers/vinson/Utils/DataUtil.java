@@ -1,5 +1,8 @@
 package pers.vinson.Utils;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
 public class DataUtil {
 	public DataUtil(){}
 	
@@ -98,5 +101,12 @@ public class DataUtil {
 	public static int getLowByte(byte data){
 		int low = ((data & 0x0f));
 		return low;
+	}
+	
+	//timestamp to date
+	public static String timestampToDate(String timestamp){
+		SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String sTime = timeFormat.format(new Date(Long.parseLong(timestamp)));
+		return sTime;
 	}
 }

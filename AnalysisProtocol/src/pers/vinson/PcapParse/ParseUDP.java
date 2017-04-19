@@ -8,28 +8,33 @@ public class ParseUDP {
 		UDPPacketHeader udp = new UDPPacketHeader();
 		byte[] buff_2 = new byte[2];
 		
-		for(int nIndex = 0; nIndex < 2; ++nIndex)
-			buff_2[nIndex] = content[nIndex + offset];
-		short srcPort = DataUtil.byteArrayToShort(buff_2);
-		udp.setSrcPort(srcPort);
-		
-		offset += 2;
-		for(int nIndex = 0; nIndex < 2; ++nIndex)
-			buff_2[nIndex] = content[nIndex + offset];
-		short desPort = DataUtil.byteArrayToShort(buff_2);
-		udp.setDesPort(desPort);
-		
-		offset += 2;
-		for(int nIndex = 0; nIndex < 2; ++nIndex)
-			buff_2[nIndex] = content[nIndex + offset];
-		short length = DataUtil.byteArrayToShort(buff_2);
-		udp.setLength(length);
-		
-		offset += 2;
-		for(int nIndex = 0; nIndex < 2; ++nIndex)
-			buff_2[nIndex] = content[nIndex + offset];
-		short checkSum = DataUtil.byteArrayToShort(buff_2);
-		udp.setCheckSum(checkSum);
+		try{
+			for(int nIndex = 0; nIndex < 2; ++nIndex)
+				buff_2[nIndex] = content[nIndex + offset];
+			short srcPort = DataUtil.byteArrayToShort(buff_2);
+			udp.setSrcPort(srcPort);
+			
+			offset += 2;
+			for(int nIndex = 0; nIndex < 2; ++nIndex)
+				buff_2[nIndex] = content[nIndex + offset];
+			short desPort = DataUtil.byteArrayToShort(buff_2);
+			udp.setDesPort(desPort);
+			
+			offset += 2;
+			for(int nIndex = 0; nIndex < 2; ++nIndex)
+				buff_2[nIndex] = content[nIndex + offset];
+			short length = DataUtil.byteArrayToShort(buff_2);
+			udp.setLength(length);
+			
+			offset += 2;
+			for(int nIndex = 0; nIndex < 2; ++nIndex)
+				buff_2[nIndex] = content[nIndex + offset];
+			short checkSum = DataUtil.byteArrayToShort(buff_2);
+			udp.setCheckSum(checkSum);
+		}catch(ArrayIndexOutOfBoundsException e){
+			e.printStackTrace();
+			return null;
+		}
 		
 		return udp;
 	}
