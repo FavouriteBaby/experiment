@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.List;
 
 
@@ -71,6 +74,8 @@ public class SaveFile {
 		try{
 			writer = new BufferedWriter(new FileWriter(filePath));
 			for(ProtocolData data : content){
+				System.out.println(data.getSrcIP());
+				System.out.println(data.getDesIP());
 				writer.write(data.getSrcIP() + "," + data.getDesIP() + "," + data.getSrcPort() + "," + data.getDesPort());
 				writer.newLine();
 			}

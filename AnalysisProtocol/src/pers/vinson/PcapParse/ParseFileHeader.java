@@ -63,6 +63,7 @@ public class ParseFileHeader {
 	//鏄惁涓哄ぇ绔舰寮忓瓨鍌�
 	public static boolean isBigEnd(PcapFileHeader fileHeader){
 		int magic = fileHeader.getMagic();
+		System.out.println(Integer.toHexString(magic));
 		if(Integer.toHexString(magic).equals("d4c3b2a1"))
 			return true;
 		return false;
