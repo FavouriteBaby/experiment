@@ -4,13 +4,15 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class Classification {
-	private List<StringBuilder> listSrcIP = new ArrayList<StringBuilder>();
-	private List<StringBuilder> listDesIP = new ArrayList<StringBuilder>();
-	private List<StringBuilder> listSrcPort = new ArrayList<StringBuilder>();
-	private List<StringBuilder> listDesPort = new ArrayList<StringBuilder>();
+	private HashMap<String, Integer> srcIP = new HashMap<String, Integer>();
+	private HashMap<String, Integer> desIP = new HashMap<String, Integer>();
+	private HashMap<String, Integer> srcPort = new HashMap<String, Integer>();
+	private HashMap<String, Integer> desPort = new HashMap<String, Integer>();
 	
 	//read txt file
 	public void readFile(String filePath){
@@ -19,8 +21,10 @@ public class Classification {
 			reader = new BufferedReader(new FileReader(filePath));
 			String str = null;
 			while((str = reader.readLine()) != null){
-				System.out.println(str);
-				listSrcIP.add(str.split(",")[0]);
+				count(srcIP, str.split(",")[0]);
+				count(desIP, str.split(",")[1]);
+				count(srcPort, str.split(",")[2]);
+				count(desPort, str.split(",")[3]);
 			}
 
 		}catch(Exception e){
@@ -36,24 +40,42 @@ public class Classification {
 		}
 	}
 	
-	public List<StringBuilder> getSrcIPList(){
-		return listSrcIP;
+	public static void count(HashMap<String, Integer> hashMap, String str){
+		if(!hashMap.containsKey(str)){
+			hashMap.put(str, new Integer(1));
+		}else{
+			int k = hashMap.get(str).intValue()+1;
+			hashMap.put(str, new Integer(k));
+		}
 	}
 	
-	public List<StringBuilder> getDesIPList(){
-		return listDesIP;
+	public HashMap<String, Integer> getSrcIPList(){
+		return srcIP;
 	}
 	
-	public List<StringBuilder> getSrcPortList(){
-		return listSrcPort;
+	public HashMap<String, Integer> getDesIPList(){
+		return desIP;
 	}
 	
-	public List<StringBuilder> getDesPortList(){
-		return listDesPort;
+	public HashMap<String, Integer> getSrcPortList(){
+		return srcPort;
 	}
 	
+	public HashMap<String, Integer> getDesPortList(){
+		return desPort;
+	}
+	
+	/*
 	public static void main(String[] args){
 		Classification cls = new Classification();
-		cls.readFile("data/test_5.txt");
+		cls.readFile("data/output.txt");
+		HashMap<String, Integer> hashMap = cls.getSrcIPList();
+		Iterator<String> it = hashMap.keySet().iterator();
+		while(it.hasNext()){
+			String str = (String)it.next();
+			System.out.println(str);
+			System.out.println(hashMap.get(str));
+		}
 	}
+	*/
 }
